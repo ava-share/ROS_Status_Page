@@ -8,7 +8,7 @@ Programming Language: Your choice of Python2 or C++, check which one’s are sup
 Sensors: Lidar, Camera, GPS/IMU (INS). 
 For now just one Lidar, 2 Front Cameras, one INS system
 
-Desired Status (TBD, some of these may not be easy to do): 
+Desired Status: 
 Publishing Frequency of sensors 
 Camera/Lidar are expected to be around 10 Hz (for now it is acceptable to just check whether the Image topic is published at all) 
 INS is expected to be around 50 Hz (for now it is acceptable to just check whether the Lidar topic is published at all) 

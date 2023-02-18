@@ -115,20 +115,24 @@ from sensor_msgs.msg import Image
 # Initialize a ROS node with the name "subNodestat"
 rospy.init_node("subNodestat", anonymous=True)
 
+
 # Define a class for the node behavior
 class detecion():
-    def __init__(self, topic, alpha):
+    def __init__(self, topic, dataType, alpha):
         """
         Constructor for the detection class.
 
         Arguments:
         topic -- ROS topic to subscribe to
+        dataType -- type of ROS message to subscribe to
         alpha -- time limit in seconds for which the node waits for a message before sending a warning
         """
         self.alpha = alpha
         self.topic = topic
         self.publisher = None
         self.last_time = rospy.Time.now()
+        self.dataType = dataType
+        self.working = True
 
     def runTime(self, data):
         """
@@ -149,36 +153,42 @@ class detecion():
 
         if elapsed_time > self.alpha:
             rospy.logwarn("[" + self.topic + "] No message received for " + str(elapsed_time) + " seconds")
+            self.working = False
+        elif not self.working:
+            rospy.loginfo("[" + self.topic + "] Is working...")
+            self.working = True
 
     def spin(self):
         """
         Loop until the node is shutdown by ROS.
         Call checkTime() repeatedly with a delay of 0.5 seconds.
         """
-        try :
+        try:
             while not rospy.core.is_shutdown():
                 rospy.rostime.wallsleep(0.5)
                 self.checkTime()
         except rospy.ROSInterruptException:
             pass
 
-    def camera(self):
+    def subscriber(self):
         """
         Subscribe to the ROS topic specified by self.topic.
         Set self.runTime as the callback function.
         Call self.spin().
         """
-        image_sub = rospy.Subscriber(self.topic, Image, self.runTime)
+        image_sub = rospy.Subscriber(self.topic, self.dataType, self.runTime)
         self.spin()
+
 
 # Main block
 if __name__ == "__main__":
     try:
-        # Create an instance of the detection class with topic '/camera_fl/image_color' and time limit of 1 second.
-        camera = detecion('/camera_fl/image_color', 1)
-        # Call the camera() method of the instance.
-        camera.camera()
+        # Create an instance of the detection class with topic '/camera_fl/image_color', message type 'Image', and time limit of 1 second.
+        camera = detecion('/camera_fl/image_color', Image, 1)
+        # Call the subscriber() method of the instance.
+        camera.subscriber()
     except rospy.ROSInterruptException:
         pass
+
 ```
 

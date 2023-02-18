@@ -32,75 +32,40 @@ There are also several books/pdfs online that explain how ROS works.
 
 ```python
 #!/usr/bin/env python2
-
-# Import the necessary ROS packages and message types
 import rospy
 from sensor_msgs.msg import Image
 
-# Initialize the node with a unique name
-rospy.init_node("subNodestat", anonymous=True)
 
-# Define a class for detecting messages on a topic
-class detection():
-    
-    # Constructor function that takes the topic name and time interval as arguments
-    def __init__(self, topic, alpha):
-        
-        # Store the topic name and time interval as object variables
+rospy.init_node("subNodestat", anonymous=True)
+class detecion():
+    def __init__(self, topic,alpha):
         self.alpha = alpha
         self.topic = topic
-        
-        # Set the publisher object to None
         self.publisher = None
-        
-        # Store the current time as the "last time" a message was received
         self.last_time = rospy.Time.now()
-
-    # Function to run when a message is received on the topic
-    def runTime(self, data):
-        
-        # Get the current time
+    
+    def runTime(self,data):
         current_time = rospy.Time.now()
-        
-        # Calculate the elapsed time since the last message was received
         elapsed_time = (current_time - self.last_time).to_sec()
-        
-        # If the elapsed time is greater than the time interval, print a warning message
         if elapsed_time > self.alpha:
-            rospy.logwarn("No message received for " + str(elapsed_time) + " seconds")
-        
-        # Update the "last time" variable to the current time
+            rospy.logwarn("[" + self.topic + "] No message received for " + str(elapsed_time) + " seconds")
         self.last_time = current_time
 
-    # Function to start listening to the topic
     def camera(self):
-        
-        # Subscribe to the topic and call the runTime function when a message is received
         image_sub = rospy.Subscriber(self.topic, Image, self.runTime)
-        
-        # If the publisher object is not None and has no connections, print an error message and set the publisher to None
         if self.publisher is not None and self.publisher.get_num_connections() == 0:
-            rospy.logerr("Publisher has disconnected")
+            rospy.logerr("[" + self.topic + "] has disconnected")
             self.publisher = None
-        
-        # Keep the node running and listening for messages
         rospy.spin()
 
-# Check if the script is being run directly (as opposed to being imported as a module)
+
 if __name__ == "__main__":
-    
     try:
-        # Create an instance of the detection class, passing in the topic name and time interval as arguments
-        camera = detection('/camera_fl/image_color', 2)
-        
-        # Start listening to the topic
+        camera = detecion('/camera_fl/image_color',2)
         camera.camera()
-    
     except rospy.ROSInterruptException:
-        # Catch any ROS interrupt exceptions (such as a user interrupting the program with Ctrl-C)
         pass
-
-
+        
 ```
 
 

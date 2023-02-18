@@ -27,9 +27,7 @@ By subscribing to a topic you receive the data at the rate it’s published (unl
 Other tutorials for ROS are available here: http://wiki.ros.org/ROS/Tutorials 
 There are also several books/pdfs online that explain how ROS works. 
 
-#####################################################################
-                         sample 1
-#####################################################################
+<h1> Sample 1 </h1>
 
 
 ```python

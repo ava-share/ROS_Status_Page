@@ -27,5 +27,47 @@ By subscribing to a topic you receive the data at the rate it’s published (unl
 Other tutorials for ROS are available here: http://wiki.ros.org/ROS/Tutorials 
 There are also several books/pdfs online that explain how ROS works. 
 
+#####################################################################
+                         sample 1
+#####################################################################
+
+
+```python
+#!/usr/bin/env python2
+import rospy
+from sensor_msgs.msg import Image
+
+
+rospy.init_node("subNodestat", anonymous=True)
+class detecion():
+    def __init__(self, topic,alpha):
+        self.alpha = alpha
+        self.topic = topic
+        self.publisher = None
+        self.last_time = rospy.Time.now()
+    
+    def runTime(self,data):
+        current_time = rospy.Time.now()
+        elapsed_time = (current_time - self.last_time).to_sec()
+        if elapsed_time > self.alpha:
+            rospy.logwarn("No message received for " + str(elapsed_time) + " seconds")
+        self.last_time = current_time
+
+    def camera(self):
+        image_sub = rospy.Subscriber(self.topic, Image, self.runTime)
+        if self.publisher is not None and self.publisher.get_num_connections() == 0:
+            rospy.logerr("Publisher has disconnected")
+            self.publisher = None
+        rospy.spin()
+
+
+if __name__ == "__main__":
+    try:
+        camera = detecion('/camera_fl/image_color',2)
+        camera.camera()
+    except rospy.ROSInterruptException:
+        pass
+
+```
 
 

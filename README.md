@@ -27,7 +27,7 @@ By subscribing to a topic you receive the data at the rate it’s published (unl
 Other tutorials for ROS are available here: http://wiki.ros.org/ROS/Tutorials 
 There are also several books/pdfs online that explain how ROS works. 
 
-<h1> Sample 1 </h1>
+<h2> Sample 1 </h2>
 
 
 ```python
@@ -103,4 +103,80 @@ if __name__ == "__main__":
         
 ```
 
+<h2> Sample 2 <\h2>
+```python
+#!/usr/bin/env/python2
+
+import rospy
+from sensor_msgs.msg import Image
+
+# Initialize a ROS node with the name "subNodestat"
+rospy.init_node("subNodestat", anonymous=True)
+
+# Define a class for the node behavior
+class detecion():
+    def __init__(self, topic, alpha):
+        """
+        Constructor for the detection class.
+
+        Arguments:
+        topic -- ROS topic to subscribe to
+        alpha -- time limit in seconds for which the node waits for a message before sending a warning
+        """
+        self.alpha = alpha
+        self.topic = topic
+        self.publisher = None
+        self.last_time = rospy.Time.now()
+
+    def runTime(self, data):
+        """
+        Callback function for the subscriber.
+
+        Arguments:
+        data -- ROS message received by the subscriber
+        """
+        self.last_time = rospy.Time.now()
+
+    def checkTime(self):
+        """
+        Check the time elapsed since the last message was received.
+        Log a warning message if the elapsed time exceeds the time limit.
+        """
+        current_time = rospy.Time.now()
+        elapsed_time = (current_time - self.last_time).to_sec()
+
+        if elapsed_time > self.alpha:
+            rospy.logwarn("[" + self.topic + "] No message received for " + str(elapsed_time) + " seconds")
+
+    def spin(self):
+        """
+        Loop until the node is shutdown by ROS.
+        Call checkTime() repeatedly with a delay of 0.5 seconds.
+        """
+        try :
+            while not rospy.core.is_shutdown():
+                rospy.rostime.wallsleep(0.5)
+                self.checkTime()
+        except rospy.ROSInterruptException:
+            pass
+
+    def camera(self):
+        """
+        Subscribe to the ROS topic specified by self.topic.
+        Set self.runTime as the callback function.
+        Call self.spin().
+        """
+        image_sub = rospy.Subscriber(self.topic, Image, self.runTime)
+        self.spin()
+
+# Main block
+if __name__ == "__main__":
+    try:
+        # Create an instance of the detection class with topic '/camera_fl/image_color' and time limit of 1 second.
+        camera = detecion('/camera_fl/image_color', 1)
+        # Call the camera() method of the instance.
+        camera.camera()
+    except rospy.ROSInterruptException:
+        pass
+```
 

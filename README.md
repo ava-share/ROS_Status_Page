@@ -126,6 +126,7 @@ class detecion():
         topic -- ROS topic to subscribe to
         dataType -- type of ROS message to subscribe to
         alpha -- time limit in seconds for which the node waits for a message before sending a warning
+        working -- bool value of the publisher's statue
         """
         self.alpha = alpha
         self.topic = topic

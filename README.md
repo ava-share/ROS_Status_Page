@@ -27,83 +27,7 @@ By subscribing to a topic you receive the data at the rate it’s published (unl
 Other tutorials for ROS are available here: http://wiki.ros.org/ROS/Tutorials 
 There are also several books/pdfs online that explain how ROS works. 
 
-<h2> Sample 1 </h2>
-
-
-```python
-#!/usr/bin/env python2
-
-# Import the necessary ROS packages and message types
-import rospy
-from sensor_msgs.msg import Image
-
-# Initialize the node with a unique name
-rospy.init_node("subNodestat", anonymous=True)
-
-# Define a class for detecting messages on a topic
-class detection():
-    
-    # Constructor function that takes the topic name and time interval as arguments
-    def __init__(self, topic, alpha):
-        
-        # Store the topic name and time interval as object variables
-        self.alpha = alpha
-        self.topic = topic
-        
-        # Set the publisher object to None
-        self.publisher = None
-        
-        # Store the current time as the "last time" a message was received
-        self.last_time = rospy.Time.now()
-
-    # Function to run when a message is received on the topic
-    def runTime(self, data):
-        
-        # Get the current time
-        current_time = rospy.Time.now()
-        
-        # Calculate the elapsed time since the last message was received
-        elapsed_time = (current_time - self.last_time).to_sec()
-        
-        # If the elapsed time is greater than the time interval, print a warning message
-        if elapsed_time > self.alpha:
-            rospy.logwarn("[" + self.topic + "] No message received for " + str(elapsed_time) + " seconds")
-        
-        # Update the "last time" variable to the current time
-        self.last_time = current_time
-
-    # Function to start listening to the topic
-    def camera(self):
-        
-        # Subscribe to the topic and call the runTime function when a message is received
-        image_sub = rospy.Subscriber(self.topic, Image, self.runTime)
-        
-        # If the publisher object is not None and has no connections, print an error message and set the publisher to None
-        if self.publisher is not None and self.publisher.get_num_connections() == 0:
-            rospy.logerr("[" + self.topic + "] has disconnected")
-            self.publisher = None
-        
-        # Keep the node running and listening for messages
-        rospy.spin()
-
-# Check if the script is being run directly (as opposed to being imported as a module)
-if __name__ == "__main__":
-    
-    try:
-        # Create an instance of the detection class, passing in the topic name and time interval as arguments
-        camera = detection('/camera_fl/image_color', 2)
-        
-        # Start listening to the topic
-        camera.camera()
-    
-    except rospy.ROSInterruptException:
-        # Catch any ROS interrupt exceptions (such as a user interrupting the program with Ctrl-C)
-        pass
-
-        
-```
-
-<h2> Sample 2 </h2>
+<h2> One Topic </h2>
 
 
 ```python
@@ -192,75 +116,75 @@ if __name__ == "__main__":
 
 ```
 
-<h3> Test 1 </h3>
+
+<h2> Multiple Topics </h2>
 
 
 ```python
 #!/usr/bin/env/python2
 
+# Import the necessary ROS packages and message types
 import rospy
-from sensor_msgs.msg import Image
-import multiprocessing as mp
-import threading as th
-import time as t
+from sensor_msgs.msg import Image, CameraInfo, NavSatFix, Imu, PointCloud2
+from gps_common.msg import GPSFix
+from nav_msgs.msg import Odometry
 
+# Initialize the ROS node with a unique name
+rospy.init_node("subNodestat", anonymous=True)
 
+# Define a class for monitoring message reception from a topic
 class detection():
     def __init__(self, topic, dataType, alpha):
-        self.alpha = alpha
-        self.topic = topic
+        self.alpha = alpha    # Maximum allowed time (in seconds) without receiving a message
+        self.topic = topic    # Name of the topic to monitor
         self.publisher = None
-        self.last_time = t.time()
-        self.dataType = dataType
-        self.working = True
-        self.lock = th.Lock()
-        rospy.init_node("subNodestat", anonymous=True)
+        self.count = 0        # Counter for elapsed time (in seconds) since the last message was received
+        self.dataType = dataType  # Type of message to expect on the topic
+        self.working = True   # Flag indicating whether the topic is currently working
         rospy.Subscriber(self.topic, self.dataType, self.runTime)
 
-
+    # Callback function to reset the timer when a new message is received
     def runTime(self, data):
-        with self.lock:
-            self.last_time = t.time()
+        self.count = 0
 
-    def checkTime(self):
-        with self.lock:
-            current_time = t.time()
-            elapsed_time = current_time - self.last_time
+# Define a function to monitor multiple topics for message reception
+def spin_all(nodes):
+    rate = rospy.Rate(1)  # Set the loop rate to 1 Hz
+    while not rospy.is_shutdown():
+        # Update the counters for each monitored topic
+        for node in nodes:
+            node.count += 1
 
-            if elapsed_time > self.alpha:
-                rospy.logwarn("[" + self.topic + "] No message received for " + str(elapsed_time) + " seconds")
-                self.working = False
-            elif not self.working:
-                rospy.loginfo("[" + self.topic + "] Is working...")
-                self.working = True
-                self.last_time = t.time()
+        # Check if the maximum allowed time has elapsed since the last message for each topic
+        for node in nodes:
+            if node.count >= node.alpha:
+                # Log a warning message if the topic has stopped publishing messages
+                rospy.logwarn("[" + node.topic + "] No message received for " + str(node.count) + " seconds")
+                node.working = False
+            elif not node.working:
+                # Log an info message when the topic resumes publishing messages
+                rospy.loginfo("[" + node.topic + "] Is working...")
+                node.working = True
+        rate.sleep()
 
-    def spin(self):
-        try:
-            while not rospy.core.is_shutdown():
-                rospy.rostime.wallsleep(0.5)
-                self.checkTime()
-        except rospy.ROSInterruptException:
-            pass
+    # Keep the node running until it is shutdown
+    rospy.spin()
 
-    def run(self):
-        self.spin()
-
-
+# Main program
 if __name__ == "__main__":
     try:
-        node1 = detection('/camera_fl/image_color', Image, 2)
-        node2 = detection('/camera_fr/image_color', Image, 2)
-
-        p1 = mp.Process(target=node1.run)
-        p2 = mp.Process(target=node2.run)
-
-        p1.start()
-        p2.start()
-
-        p1.join()
-        p2.join()
-
+        # Create instances of the detection class for each topic to monitor
+        nodes = [detection("/camera_fl/camera_info", CameraInfo, 4),
+                 detection("/camera_fl/image_color", Image, 4),
+                 detection("/camera_fr/camera_info", CameraInfo, 4),
+                 detection("/camera_fr/image_color", Image, 4),
+                 detection("/gps/fix", NavSatFix, 4),
+                 detection("/gps/gps", GPSFix, 4),
+                 detection("/gps/imu", Imu, 4),
+                 detection("/lidar_tc/velodyne_points", PointCloud2, 4),
+                 detection("/novatel/oem7/odom", Odometry, 4)]
+        # Start monitoring the topics
+        spin_all(nodes)
     except rospy.ROSInterruptException:
         pass
 ```

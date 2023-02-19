@@ -188,3 +188,73 @@ if __name__ == "__main__":
     except rospy.ROSInterruptException:
         pass
 ```
+
+
+<h2> Multiple Topics with Rate </h2>
+
+
+```python
+#!/usr/bin/env/python2
+# This is a shebang line that specifies the interpreter to use to run the script.
+
+# Import the necessary ROS packages and message types
+import rospy
+from sensor_msgs.msg import Image, CameraInfo, NavSatFix, Imu, PointCloud2
+from gps_common.msg import GPSFix
+from nav_msgs.msg import Odometry
+
+# Initialize the ROS node
+rospy.init_node("subNodestat", anonymous=True)
+
+# Define a subscriber class that keeps track of whether the subscriber is working or not
+class subscriber():
+    def __init__(self, topic, data_type, max_calls, rate=1):
+        # Initialize the subscriber with the given topic, message type, maximum number of calls without receiving a message, and rate
+        self.max_calls = max_calls
+        self.topic = topic
+        self.publisher = None
+        self.count = 0
+        self.data_type = data_type
+        self.working = True
+        self.rate = rospy.Rate(rate)
+        # Subscribe to the topic and call the run_call method when a message is received
+        rospy.Subscriber(self.topic, self.data_type, self.run_call)
+
+    def run_call(self, data):
+        # Reset the count when a message is received
+        self.count = 0
+
+# Define a function that loops over all subscribers and checks if they are working properly
+def spin_all(nodes):
+    while not rospy.is_shutdown():
+        for node in nodes:
+            # Increment the count for the number of calls without receiving a message
+            node.count += 1
+            if node.count >= node.max_calls:
+                # If the maximum number of calls has been reached, log a warning message and mark the subscriber as not working
+                rospy.logwarn("[" + node.topic + "] No message received for " + str(node.count) + " calls")
+                node.working = False
+            elif not node.working:
+                # If the subscriber was not working but has started working again, log an info message and mark the subscriber as working
+                rospy.loginfo("[" + node.topic + "] Is working...")
+                node.working = True
+            # Sleep for the specified rate
+            node.rate.sleep()
+
+if __name__ == "__main__":
+    try:
+        # Create a list of subscribers with their respective topics, message types, maximum number of calls, and rate
+        nodes = [subscriber("/camera_fl/camera_info", CameraInfo, 3 ),
+                 subscriber("/camera_fl/image_color", Image, 3 ),
+                 subscriber("/camera_fr/camera_info", CameraInfo, 3 ),
+                 subscriber("/camera_fr/image_color", Image, 3 ),
+                 subscriber("/gps/fix", NavSatFix, 3, 50),
+                 subscriber("/gps/gps", GPSFix, 3, 50),
+                 subscriber("/gps/imu", Imu, 3, 50),
+                 subscriber("/lidar_tc/velodyne_points", PointCloud2, 3, 12),
+                 subscriber("/novatel/oem7/odom", Odometry, 3)]
+        # Loop over all subscribers and check if they are working properly
+        spin_all(nodes)
+    except rospy.ROSInterruptException:
+        pass
+```

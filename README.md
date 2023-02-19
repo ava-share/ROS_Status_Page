@@ -192,9 +192,9 @@ if __name__ == "__main__":
 
 ```
 
-<h3> Test 1 <\h3>
+<h3> Test 1 </h3>
 
-    
+
 ```python
 #!/usr/bin/env/python2
 

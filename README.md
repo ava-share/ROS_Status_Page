@@ -117,7 +117,7 @@ rospy.init_node("subNodestat", anonymous=True)
 
 
 # Define a class for the node behavior
-class detecion():
+class detection():
     def __init__(self, topic, dataType, alpha):
         """
         Constructor for the detection class.
@@ -184,7 +184,7 @@ class detecion():
 if __name__ == "__main__":
     try:
         # Create an instance of the detection class with topic '/camera_fl/image_color', message type 'Image', and time limit of 1 second.
-        camera = detecion('/camera_fl/image_color', Image, 1)
+        camera = detection('/camera_fl/image_color', Image, 1)
         # Call the subscriber() method of the instance.
         camera.subscriber()
     except rospy.ROSInterruptException:

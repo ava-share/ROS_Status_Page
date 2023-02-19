@@ -190,7 +190,7 @@ if __name__ == "__main__":
 ```
 
 
-<h2> Multiple Topics with Rate </h2>
+<h2> Multiple Topics with Rates </h2>
 
 
 ```python

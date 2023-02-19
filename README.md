@@ -192,3 +192,76 @@ if __name__ == "__main__":
 
 ```
 
+<h3> Test 1 <\h3>
+    
+```python
+#!/usr/bin/env/python2
+
+import rospy
+from sensor_msgs.msg import Image
+import multiprocessing as mp
+import threading as th
+import time as t
+
+
+# Define a class for the node behavior
+class detection():
+    def __init__(self, topic, dataType, alpha):
+        self.alpha = alpha
+        self.topic = topic
+        self.publisher = None
+        self.last_time = t.time()
+        self.dataType = dataType
+        self.working = True
+        self.lock = th.Lock()
+        rospy.init_node("subNodestat", anonymous=True)
+        rospy.Subscriber(self.topic, self.dataType, self.runTime)
+
+
+    def runTime(self, data):
+        with self.lock:
+            self.last_time = t.time()
+
+    def checkTime(self):
+        with self.lock:
+            current_time = t.time()
+            elapsed_time = current_time - self.last_time
+
+            if elapsed_time > self.alpha:
+                rospy.logwarn("[" + self.topic + "] No message received for " + str(elapsed_time) + " seconds")
+                self.working = False
+            elif not self.working:
+                rospy.loginfo("[" + self.topic + "] Is working...")
+                self.working = True
+                self.last_time = t.time()
+
+    def spin(self):
+        try:
+            while not rospy.core.is_shutdown():
+                rospy.rostime.wallsleep(0.5)
+                self.checkTime()
+        except rospy.ROSInterruptException:
+            pass
+
+    def run(self):
+        self.spin()
+
+
+# Main block
+if __name__ == "__main__":
+    try:
+        node1 = detection('/camera_fl/image_color', Image, 10)
+        node2 = detection('/camera_fr/image_color', Image, 10)
+
+        p1 = mp.Process(target=node1.run)
+        p2 = mp.Process(target=node2.run)
+
+        p1.start()
+        p2.start()
+
+        p1.join()
+        p2.join()
+
+    except rospy.ROSInterruptException:
+        pass
+```

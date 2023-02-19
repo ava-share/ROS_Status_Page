@@ -249,8 +249,8 @@ class detection():
 
 if __name__ == "__main__":
     try:
-        node1 = detection('/camera_fl/image_color', Image, 10)
-        node2 = detection('/camera_fr/image_color', Image, 10)
+        node1 = detection('/camera_fl/image_color', Image, 2)
+        node2 = detection('/camera_fr/image_color', Image, 2)
 
         p1 = mp.Process(target=node1.run)
         p2 = mp.Process(target=node2.run)

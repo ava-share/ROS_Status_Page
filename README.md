@@ -193,6 +193,7 @@ if __name__ == "__main__":
 ```
 
 <h3> Test 1 <\h3>
+
     
 ```python
 #!/usr/bin/env/python2
@@ -204,7 +205,6 @@ import threading as th
 import time as t
 
 
-# Define a class for the node behavior
 class detection():
     def __init__(self, topic, dataType, alpha):
         self.alpha = alpha
@@ -247,7 +247,6 @@ class detection():
         self.spin()
 
 
-# Main block
 if __name__ == "__main__":
     try:
         node1 = detection('/camera_fl/image_color', Image, 10)

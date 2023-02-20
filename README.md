@@ -208,7 +208,7 @@ rospy.init_node("subNodestat", anonymous=True)
 
 # Define a subscriber class that keeps track of whether the subscriber is working or not
 class subscriber():
-    def __init__(self, topic, data_type, max_calls, rate=1):
+    def __init__(self, topic, data_type, max_calls, rate=10):
         # Initialize the subscriber with the given topic, message type, maximum number of calls without receiving a message, and rate
         self.max_calls = max_calls
         self.topic = topic
@@ -250,9 +250,9 @@ if __name__ == "__main__":
                  subscriber("/camera_fr/image_color", Image, 3 ),
                  subscriber("/gps/fix", NavSatFix, 3, 50),
                  subscriber("/gps/gps", GPSFix, 3, 50),
-                 subscriber("/gps/imu", Imu, 3, 50),
-                 subscriber("/lidar_tc/velodyne_points", PointCloud2, 3, 12),
-                 subscriber("/novatel/oem7/odom", Odometry, 3)]
+                 subscriber("/gps/imu", Imu, 3, 100),
+                 subscriber("/lidar_tc/velodyne_points", PointCloud2, 3, 10),
+                 subscriber("/novatel/oem7/odom", Odometry, 3, 50)]
         # Loop over all subscribers and check if they are working properly
         spin_all(nodes)
     except rospy.ROSInterruptException:

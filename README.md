@@ -43,6 +43,7 @@ node.spin() # repeat the node
 ```
 
 <h2> Multiple topic monitor </h2>
+
 ```python
 #message detector, max_calls= how many consecutive calls before printing warnning, check_period= how many times to check for each topic before going to the next one, gps_status= enable gps accuracy testing.
         nodes = [subscriber("/camera_fl/camera_info"),

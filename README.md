@@ -26,7 +26,10 @@ These topic names are specific to our system, so we will sit down once you have 
 By subscribing to a topic you receive the data at the rate it’s published (unless the program takes longer to execute) http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber(python) 
 Other tutorials for ROS are available here: http://wiki.ros.org/ROS/Tutorials 
 There are also several books/pdfs online that explain how ROS works. 
+
+
 <h> Code structure </h>
+
 Subscriber Class
 
 The subscriber class is defined to subscribe to a topic and receive messages. It takes the following parameters:

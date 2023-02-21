@@ -33,8 +33,8 @@ There are also several books/pdfs online that explain how ROS works.
 
 ```python
 #frequency test for one topic, max_calls= how many consecutive calls before printing warnning,rate= hz, check_period= how many times to check the topic, gps_status= enable gps accuracy testing
-a = subscriber("/lidar_tc/velodyne_points",max_calls=4,rate= 10, check_period=-1, gps_status=False)
-a.spin() # repeat the node
+node = subscriber("/lidar_tc/velodyne_points",max_calls=4,rate= 10, check_period=-1, gps_status=False)
+node.spin() # repeat the node
 ```
 ```diff
 - [WARN] [1677006717.499503]: [/lidar_tc/velodyne_points] No message received for 33 calls on rate of 10 Hz.
@@ -42,6 +42,38 @@ a.spin() # repeat the node
 + [INFO] [1677006717.710579]: [/lidar_tc/velodyne_points] Is working...
 ```
 
+<h2> Multiple topic monitor </h2>
+```python
+#message detector, max_calls= how many consecutive calls before printing warnning, check_period= how many times to check for each topic before going to the next one, gps_status= enable gps accuracy testing.
+        nodes = [subscriber("/camera_fl/camera_info"),
+                 subscriber("/camera_fl/image_color"),
+                 subscriber("/camera_fr/camera_info"),
+                 subscriber("/camera_fr/image_color"),
+                 subscriber("/gps/fix", gps_status=True),
+                 subscriber("/gps/gps"),
+                 subscriber("/gps/imu"),
+                 subscriber("/lidar_tc/velodyne_points"),
+                 subscriber("/novatel/oem7/odom")]
+        spin_all(nodes) # repeat for all nodes
+```
 
-
-<h2> Frequency test for one topic </h2>
+```diff
+- [WARN] [1677008006.403953]: [/camera_fl/camera_info] No message received for 8 calls on rate of 10 Hz.
+- [WARN] [1677008006.508777]: [/camera_fl/image_color] No message received for 8 calls on rate of 10 Hz.
+- [WARN] [1677008006.611975]: [/camera_fr/camera_info] No message received for 8 calls on rate of 10 Hz.
+- [WARN] [1677008006.715667]: [/camera_fr/image_color] No message received for 9 calls on rate of 10 Hz.
+- [WARN] [1677008006.820292]: [/gps/fix] No message received for 9 calls on rate of 10 Hz.
+- [WARN] [1677008006.925539]: [/gps/gps] No message received for 9 calls on rate of 10 Hz.
+- [WARN] [1677008007.027636]: [/gps/imu] No message received for 9 calls on rate of 10 Hz.
+- [WARN] [1677008007.131011]: [/lidar_tc/velodyne_points] No message received for 9 calls on rate of 10 Hz.
+- [WARN] [1677008007.237315]: [/novatel/oem7/odom] No message received for 9 calls on rate of 10 Hz.
++ [INFO] [1677008007.341311]: [/camera_fl/camera_info] Is working...
++ [INFO] [1677008007.444135]: [/camera_fl/image_color] Is working...
++ [INFO] [1677008007.546787]: [/camera_fr/camera_info] Is working...
++ [INFO] [1677008007.652143]: [/camera_fr/image_color] Is working...
++ [INFO] [1677008007.755100]: [/gps/fix] Is working...
++ [INFO] [1677008007.857931]: [/gps/gps] Is working...
++ [INFO] [1677008007.965180]: [/gps/imu] Is working...
++ [INFO] [1677008008.067254]: [/lidar_tc/velodyne_points] Is working...
++ [INFO] [1677008008.170661]: [/novatel/oem7/odom] Is working...
+```

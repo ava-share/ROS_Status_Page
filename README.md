@@ -36,7 +36,6 @@ There are also several books/pdfs online that explain how ROS works.
 a = subscriber("/lidar_tc/velodyne_points",max_calls=4,rate= 10, check_period=-1, gps_status=False)
 a.spin() # repeat the node
 ```
-terminal:
 ```diff
 - [WARN] [1677006717.499503]: [/lidar_tc/velodyne_points] No message received for 33 calls on rate of 10 Hz.
 - [WARN] [1677006717.604131]: [/lidar_tc/velodyne_points] No message received for 34 calls on rate of 10 Hz.

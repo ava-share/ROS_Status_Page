@@ -32,7 +32,7 @@ There are also several books/pdfs online that explain how ROS works.
 <h2> Frequency test for one topic </h2>
 
 ```python
-#frequency test for one topic, max_calls= how many consecutive calls before printing warnning,rate= hz, check_period= how many times to check the topic, gps_status= enable gps accurcy testing
+#frequency test for one topic, max_calls= how many consecutive calls before printing warnning,rate= hz, check_period= how many times to check the topic, gps_status= enable gps accuracy testing
 a = subscriber("/lidar_tc/velodyne_points",max_calls=4,rate= 10, check_period=-1, gps_status=False)
 a.spin() # repeat the node
 ```

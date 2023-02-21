@@ -26,6 +26,40 @@ These topic names are specific to our system, so we will sit down once you have 
 By subscribing to a topic you receive the data at the rate it’s published (unless the program takes longer to execute) http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber(python) 
 Other tutorials for ROS are available here: http://wiki.ros.org/ROS/Tutorials 
 There are also several books/pdfs online that explain how ROS works. 
+<h> Code structure </h>
+Subscriber Class
+
+The subscriber class is defined to subscribe to a topic and receive messages. It takes the following parameters:
+
+    topic: the name of the topic to subscribe to.
+    data_type: the type of the messages to receive. It defaults to rospy.AnyMsg.
+    max_calls: the number of consecutive calls without receiving a message before logging a warning. It defaults to 4.
+    rate: the rate at which to check for messages. It defaults to 10 Hz.
+    check_period: the number of times to check for messages for each topic before moving on to the next one. It defaults to 1.
+    gps_status: a flag indicating whether to check the GPS accuracy. It defaults to False.
+
+The subscriber class has the following attributes:
+
+    max_calls: the number of consecutive calls without receiving a message before logging a warning.
+    topic: the name of the topic to subscribe to.
+    count: the number of consecutive calls without receiving a message.
+    data_type: the type of the messages to receive.
+    working: a flag indicating whether the subscriber is working correctly.
+    rate: the rate at which to check for messages.
+    check_period: the number of times to check for messages for each topic before moving on to the next one.
+    gps_status: a flag indicating whether to check the GPS accuracy.
+    gps_accur: a flag indicating whether the GPS accuracy is sufficient.
+    msg: the most recent message received.
+
+The subscriber class has the following methods:
+
+    run_call: the callback function to run when a message is received on the subscribed topic. It saves the message data in the msg attribute and resets the count.
+    get_rate: a helper function to return a rate object based on the rate parameter.
+    spin: the main function to run the subscriber. It logs a warning if max_calls messages haven't been received, logs an info message if the subscriber is working correctly, and logs a warning if the GPS accuracy is low.
+
+spin_all function
+
+The spin_all function is used to spin all the subscriber nodes. It takes a list of nodes as a parameter and runs spin for each node in the list.
 
 <h> How to use the code: </h>
 

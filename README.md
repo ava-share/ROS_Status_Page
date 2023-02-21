@@ -38,8 +38,8 @@ a.spin() # repeat the node
 ```
 terminal:
 ```diff
-+ [WARN] [1677006717.499503]: [/lidar_tc/velodyne_points] No message received for 33 calls on rate of 10 Hz.
-+ [WARN] [1677006717.604131]: [/lidar_tc/velodyne_points] No message received for 34 calls on rate of 10 Hz.
+- [WARN] [1677006717.499503]: [/lidar_tc/velodyne_points] No message received for 33 calls on rate of 10 Hz.
+- [WARN] [1677006717.604131]: [/lidar_tc/velodyne_points] No message received for 34 calls on rate of 10 Hz.
 + [INFO] [1677006717.710579]: [/lidar_tc/velodyne_points] Is working...
 ```
 

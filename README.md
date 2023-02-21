@@ -37,9 +37,10 @@ a = subscriber("/lidar_tc/velodyne_points",max_calls=4,rate= 10, check_period=-1
 a.spin() # repeat the node
 ```
 terminal:
-<span style="color: #f1c40f">[`WARN`]</span> [1677006717.499503]: [/lidar_tc/velodyne_points] No message received for 33 calls on rate of 10 Hz.
-<span style="color: #f1c40f">[`WARN`]</span> [1677006717.604131]: [/lidar_tc/velodyne_points] No message received for 34 calls on rate of 10 Hz.
-<span style="color: #2ecc71">[`INFO`]</span> [1677006717.710579]: [/lidar_tc/velodyne_points] Is working...
+
+[`WARN`](#f1c40f) [1677006717.499503]: [/lidar_tc/velodyne_points] No message received for 33 calls on rate of 10 Hz.
+[`WARN`](#f1c40f) [1677006717.604131]: [/lidar_tc/velodyne_points] No message received for 34 calls on rate of 10 Hz.
+[`INFO`](#2ecc71) [1677006717.710579]: [/lidar_tc/velodyne_points] Is working...
 
 
 

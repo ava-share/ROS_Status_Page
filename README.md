@@ -28,7 +28,7 @@ Other tutorials for ROS are available here: http://wiki.ros.org/ROS/Tutorials
 There are also several books/pdfs online that explain how ROS works. 
 
 
-<h> Code structure </h>
+<h2> Code structure: </h2>
 
 Subscriber Class
 
@@ -64,9 +64,9 @@ spin_all function
 
 The spin_all function is used to spin all the subscriber nodes. It takes a list of nodes as a parameter and runs spin for each node in the list.
 
-<h> How to use the code: </h>
+<h2> How to use the code: </h2>
 
-<h2> Frequency test for one topic </h2>
+<h> Frequency test for one topic </h>
 
 ```python
 #frequency test for one topic, max_calls= how many consecutive calls before printing warnning,rate= hz, check_period= how many times to check the topic, gps_status= enable gps accuracy testing
@@ -79,7 +79,7 @@ node.spin() # repeat the node
 + [INFO] [1677006717.710579]: [/lidar_tc/velodyne_points] Is working...
 ```
 
-<h2> Multiple topic monitor </h2>
+<h> Multiple topic monitor </h>
 
 ```python
 #message detector, max_calls= how many consecutive calls before printing warnning, check_period= how many times to check for each topic before going to the next one, gps_status= enable gps accuracy testing.

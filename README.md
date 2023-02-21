@@ -285,6 +285,7 @@ class subscriber():
         self.rate = rate
         self.check_period = check_period
         self.gps_status = gps_status
+        self.gps_accur = True
         self.msg = None
         # Subscribe to the specified topic with the defined data type and the run_call function as the callback
         rospy.Subscriber(self.topic, self.data_type, self.run_call)
@@ -316,7 +317,11 @@ class subscriber():
             # If gps_status is True and a message has been received, check the GPS status and log a warning if it's below 2
             if self.working and self.gps_status and (self.msg != None):
                 if self.msg.status.status < 2:
-                    rospy.logwarn("[" + self.topic + "] GPS status is %0.1f" %self.msg.status.status)
+                    rospy.logwarn("[" + self.topic + "] GPS status is %0.1f - low accuracy" %self.msg.status.status)
+                    self.gps_accur = False
+                elif (not self.gps_accur) and self.msg.status.status == 2:
+                    self.gps_accur = True
+                    rospy.loginfo("[" + self.topic + "] GPS status is %0.1f - sufficient accuracy" % self.msg.status.status)
             # Sleep based on the rate
             self.get_rate().sleep()
 
@@ -338,4 +343,5 @@ if __name__ == '__main__':
              subscriber("/lidar_tc/velodyne_points"),
              subscriber("/novatel/oem7/odom")]
     spin_all(nodes)
+
 ```

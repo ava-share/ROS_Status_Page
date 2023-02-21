@@ -157,16 +157,16 @@ node.spin() # repeat the node
 
 ```python
 #message detector, max_calls= how many consecutive calls before printing warnning, check_period= how many times to check for each topic before going to the next one, gps_status= enable gps accuracy testing.
-        nodes = [subscriber("/camera_fl/camera_info"),
-                 subscriber("/camera_fl/image_color"),
-                 subscriber("/camera_fr/camera_info"),
-                 subscriber("/camera_fr/image_color"),
-                 subscriber("/gps/fix", gps_status=True),
-                 subscriber("/gps/gps"),
-                 subscriber("/gps/imu"),
-                 subscriber("/lidar_tc/velodyne_points"),
-                 subscriber("/novatel/oem7/odom")]
-        spin_all(nodes) # repeat for all nodes
+nodes = [subscriber("/camera_fl/camera_info"),
+         subscriber("/camera_fl/image_color"),
+         subscriber("/camera_fr/camera_info"),
+         subscriber("/camera_fr/image_color"),
+         subscriber("/gps/fix", gps_status=True),
+         subscriber("/gps/gps"),
+         subscriber("/gps/imu"),
+         subscriber("/lidar_tc/velodyne_points"),
+         subscriber("/novatel/oem7/odom")]
+spin_all(nodes) # repeat for all nodes
 ```
 
 ```diff
